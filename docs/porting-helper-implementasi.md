@@ -108,10 +108,18 @@ wasnaker-core/app/
    slugify standar (lowercase, dash, strip special chars).
 3. `Number::formatMoney()` saat ini menggunakan format simbol mata uang statis.
    Nanti dapat digabung dengan model Currency / exchange-rate service.
-4. `SettingService::findWithFallback()` mengimplementasi pola fallback global→tenant
-   sesuai `docs/domain-multitenancy.md`.
+4. `SettingService::findWithFallback($key, $tenantId, $default)` mengimplementasikan
+   pola fallback global→tenant sesuai `docs/domain-multitenancy.md`. Global =
+   `tenant_id NULL`. Method ini benar-benar ada di `SettingService.php`.
 5. `HasMetaData` trait menggunakan pola `morphMany` ke `CustomMeta` model.
    Entity yang punya meta tidak perlu tahu implementasi storage.
+6. Skema `settings`: `key` + `tenant_id` adalah **composite unique**
+   (`unique(['key','tenant_id'])`), bukan `key` global unique. Ini penting agar
+   tiap tenant boleh override setting yang sama. Migration `2026_08_28_000001`.
+7. `App\Models\Tenant` adalah stub minimal (nama, slug, parent_id, type) untuk
+   memecahkan dangling `belongsTo(Tenant::class)` di Setting/ActivityLog.
+   Skema hierarki lengkap (Platform→TenantGroup→Organization→Unit) menyusul
+   di domain-multitenancy porting.
 
 ---
 
@@ -125,7 +133,7 @@ wasnaker-core/app/
 | database_helper.php → ActivityLogService | application/helpers/database_helper.php | app/Services/ActivityLogService.php | ✅ Port | Batch 3 (ini): migration + model + service |
 || user_meta_helper.php → HasMetaData | application/helpers/user_meta_helper.php | app/Traits/HasMetaData.php | ✅ Port | Batch 4 (ini): CustomMeta model + migration + trait |
 | relation_helper.php | application/helpers/relation_helper.php | TBD | ⏳ Belum tentu | Diskusi terpisah |
-| files_helper.php → FileService | application/helpers/files_helper.php | app/Services/FileService.php | ⏳ Nanti | Batch N |
+| files_helper.php → FileService | application/helpers/files_helper.php | app/Services/FileService.php | ✅ Port | Batch 5 (commit 30869f1) |
 
 ---
 

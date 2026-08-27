@@ -129,4 +129,33 @@ class SettingService
     {
         return $this->get($key, $default, $tenantId);
     }
+
+    /**
+     * Ambil setting dengan fallback global -> tenant.
+     *
+     * Sesuai docs/domain-multitenancy.md: setting level per-tenant menimpa
+     * setting global. Urutan: (1) cari di tenant scope, (2) kalau tidak ada,
+     * fallback ke global (tenant_id NULL), (3) kalau tetap kosong pakai $default.
+     *
+     * @param string $key        Nama setting
+     * @param int|null $tenantId Scope tenant (null = hanya cek global)
+     * @param mixed  $default    Nilai fallback terakhir
+     * @return mixed
+     */
+    public function findWithFallback(string $key, ?int $tenantId = null, mixed $default = null): mixed
+    {
+        if ($tenantId !== null) {
+            $tenantValue = $this->get($key, null, $tenantId);
+            if ($tenantValue !== null) {
+                return $tenantValue;
+            }
+        }
+
+        $globalValue = $this->get($key, null, null);
+        if ($globalValue !== null) {
+            return $globalValue;
+        }
+
+        return $default;
+    }
 }
