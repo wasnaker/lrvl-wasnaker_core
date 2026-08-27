@@ -33,9 +33,11 @@ class ActivityLogService
         mixed $subject = null,
         mixed $causer = null,
         array $properties = [],
-        ?int $tenantId = null
+        ?int $tenantId = null,
+        ?string $subjectType = null,
+        ?string $causerType = null
     ): ActivityLog {
-        $subjectType = null;
+        $subjectType = $subjectType;
         $subjectId = null;
 
         if ($subject instanceof Model) {
@@ -45,7 +47,7 @@ class ActivityLogService
             $subjectId = $subject;
         }
 
-        $causerType = null;
+        $causerType = $causerType;
         $causerId = null;
 
         if ($causer instanceof Model) {

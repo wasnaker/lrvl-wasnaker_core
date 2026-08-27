@@ -153,7 +153,9 @@ class ActivityLogController extends Controller
             isset($validated['subject_id']) ? (int) $validated['subject_id'] : null,
             isset($validated['causer_id']) ? (int) $validated['causer_id'] : null,
             $validated['properties'] ?? [],
-            $validated['tenant_id'] ?? null
+            $validated['tenant_id'] ?? null,
+            $validated['subject_type'] ?? null,
+            $validated['causer_type'] ?? null
         );
 
         return response()->json($log, 201);
