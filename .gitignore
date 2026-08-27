@@ -34,3 +34,15 @@ wasnaker-wasnaker-at-gmail-com
 *.token
 *.ghp
 *.secret
+
+# Wasnaker: dokumen non-repo (tidak dikomit)
+/data/
+/docs-private/
+
+# Wasnaker: source & hasil build frontend SPA (belum diputuskan framework)
+/frontend/
+/public_html/
+/public/index.html
+/public/favicon.ico
+/public/manifest.json
+/public/assets/
