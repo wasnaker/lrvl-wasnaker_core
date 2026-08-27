@@ -46,3 +46,6 @@ wasnaker-wasnaker-at-gmail-com
 /public/favicon.ico
 /public/manifest.json
 /public/assets/
+
+# Scribe intermediate build cache
+/.scribe/
