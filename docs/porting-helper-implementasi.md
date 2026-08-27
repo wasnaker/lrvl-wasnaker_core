@@ -123,7 +123,7 @@ wasnaker-core/app/
 | sales_helper.php → Number (format) | application/helpers/sales_helper.php | app/Support/Helpers/Number.php | ✅ Port | Batch 1 (ini) |
 | settings_helper.php → SettingService | application/helpers/settings_helper.php | app/Services/SettingService.php | ✅ Port | Batch 2 (ini): migration + model + service |
 | database_helper.php → ActivityLogService | application/helpers/database_helper.php | app/Services/ActivityLogService.php | ✅ Port | Batch 3 (ini): migration + model + service |
-|| user_meta_helper.php → HasMetaData | application/helpers/user_meta_helper.php | app/Traits/HasMetaData.php | ⏳ Pending migration | Batch 4 |
+|| user_meta_helper.php → HasMetaData | application/helpers/user_meta_helper.php | app/Traits/HasMetaData.php | ✅ Port | Batch 4 (ini): CustomMeta model + migration + trait |
 | relation_helper.php | application/helpers/relation_helper.php | TBD | ⏳ Belum tentu | Diskusi terpisah |
 | files_helper.php → FileService | application/helpers/files_helper.php | app/Services/FileService.php | ⏳ Nanti | Batch N |
 
