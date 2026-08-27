@@ -28,3 +28,9 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
+
+# Wasnaker: secret/token files - never commit
+wasnaker-wasnaker-at-gmail-com
+*.token
+*.ghp
+*.secret
