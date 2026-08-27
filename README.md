@@ -1,59 +1,76 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# wasnaker-core
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Backend inti (API-only) Wasnaker** — migrasi arsitektur dari PerfexCRM ke Laravel, dirancang sebagai monorepo **core tanpa modul** + repository terpisah per modul. Core ini berfungsi sebagai fondasi aplikasi: tidak mengandung modul bisnis apa pun; setiap modul (mis. `wasnaker/sales-module`) dipasang sebagai *package* Composer.
 
-## About Laravel
+## Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Laravel 12** (PHP ^8.2)
+- **API-only** — hanya menyediakan endpoint JSON (tidak ada UI/Blade bisnis)
+- **Laravel Sanctum** — autentikasi token (personal access tokens)
+- **nwidart/laravel-modules** — kerangka modular, dengan strategi **vendor scan** (modul didaftarkan sebagai package Composer normal di `vendor/*/*`)
+- **MySQL 8** — database `wasnaker`, koneksi `127.0.0.1:3306`
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Struktur
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```
+wasnaker.lan/               <- core (repo: lrvl-wasnaker_core)
+├── app/                    <- kode inti Laravel (model, provider, dll)
+├── bootstrap/              <- app.php (routing API + penanganan autentikasi)
+├── config/
+│   ├── modules.php         <- nwidart/laravel-modules (scan.enabled=true, paths=vendor/*/*)
+│   └── sanctum.php         <- API token guard
+├── database/migrations/    <- users, cache, jobs, personal_access_tokens
+├── docs/                   <- analisis & rencana migrasi Perfex -> Laravel
+├── modules/                <- placeholder (modul hidup di vendor)
+├── routes/
+│   └── api.php             <- /api/health, /api/user, + rute modul (/api/v1/...)
+└── vendor/
+    └── wasnaker/
+        └── sales-module    <- contoh modul (ini commit, dipasang via path/vendor)
+```
 
-## Learning Laravel
+## Arsitektur modul
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **Core** = tanpa modul bisnis; difokuskan pada fondasi (auth, base services, konfigurasi).
+- Tiap **modul** = repository git sendiri (mis. `wasnaker-sales-module`), nama package `wasnaker/<nama>-module`.
+- Modul di-install ke core via Composer (saat ini `type:path` dengan `symlink:true` ke repo lokal; dapat dialihkan ke `type:vcs` setelah repo modul mendapat remote).
+- Pendaftaran otomatis via **vendor scan**: `config/modules.php` → `scan.enabled=true`, `scan.paths = vendor/*/*`.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Endpoint inti
 
-## Laravel Sponsors
+| Method | URI          | Auth        | Deskripsi                          |
+|--------|--------------|-------------|------------------------------------|
+| GET    | `/api/health`| –           | Health check (200 JSON)            |
+| GET    | `/api/user`  | `auth:sanctum` | Detail user terautentikasi       |
+| (beragam) | `/api/v1/sales/*` | `auth:sanctum` | Rute dari `wasnaker/sales-module` (stub JSON) |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Semua permintaan tidak terautentikasi dikembalikan sebagai `401 {"message":"Unauthenticated."}` (JSON).
 
-### Premium Partners
+## Persyaratan instalasi
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- PHP 8.2+ (di aaPanel tersedia profil 8.2 & 8.4; vhost `wasnaker.lan` berjalan di PHP 8.4 FPM)
+- Extensions: `fileinfo`, `zip`, `pdo_mysql`, `mbstring`, `openssl`
+- Composer 2.x, Node.js/NPM (untuk asset bila dibutuhkan)
+- MySQL 8
 
-## Contributing
+## Instalasi
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+composer install
+cp .env.example .env        # sesuaikan DB_DATABASE, DB_USERNAME, DB_PASSWORD
+php artisan key:generate
+php artisan migrate --force   # membuat schema db `wasnaker`
+php artisan serve
+```
 
-## Code of Conduct
+Catatan: `.env` tidak dikomit (perhatikan pola ignore secret di `.gitignore`).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Menambah modul baru
 
-## Security Vulnerabilities
+1. Buat/install package `wasnaker/<nama>-module` (repo terpisah) ke `vendor/`.
+2. Jalankan `php artisan module:list` — modul terdeteksi otomatis (vendor scan) dan berstatus `[Enabled]`.
+3. Implementasikan rute, controller, migration di dalam repo modul.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Lisensi
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Kode inti disebarkan di bawah **GNU GPL v2** (lihat `LICENSE`).
