@@ -9,6 +9,8 @@ class CustomMeta extends Model
 {
     public $timestamps = true;
 
+    protected $table = 'custom_meta';
+
     protected $fillable = [
         'meta_key',
         'meta_value',
