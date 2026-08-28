@@ -8,6 +8,8 @@ use App\Models\ActivityLog;
 use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 /**
  * API log aktivitas (dari database_helper.php PerfexCRM: log_activity).
@@ -24,15 +26,32 @@ class ActivityLogController extends Controller
     ) {}
 
     /**
-     * List log aktivitas.
+     * List log aktivitas (server-side list: paging, sort, filter, search, include).
+     *
+     * Pengganti `data_tables_init()` Perfex — kontrak DataTables diterjemahkan
+     * ke query param REST:
+     *   ?sort=-created_at,id            (whitelist, prefix - = DESC)
+     *   &filter[tenant_id]=1            (exact)
+     *   &filter[causer_id]=1            (exact)
+     *   &filter[subject_type]=...       (exact)
+     *   &filter[subject_id]=5           (exact)
+     *   &filter[description]=cari       (partial / LIKE)
+     *   &search=...                     (global search: description + subject_type)
+     *   &include=causer,tenant          (eager load relasi)
+     *   &per_page=25&page=2             (pagination)
      *
      * @authenticated
      *
-     * @queryParam tenant_id integer optional Filter scope tenant. Example: 1
-     * @queryParam causer_id integer optional Filter berdasar user id (causer). Example: 1
-     * @queryParam subject_type string optional Filter tipe subjek. Example: App\Models\Invoice
-     * @queryParam subject_id integer optional Filter id subjek. Example: 5
-     * @queryParam per_page integer optional Jumlah per halaman. Example: 15
+     * @queryParam sort string optional Kolom urut (whitelist): id, description, subject_type, subject_id, causer_id, tenant_id, created_at; prefix - untuk DESC. Example: -created_at
+     * @queryParam filter[tenant_id] integer optional Filter exact tenant. Example: 1
+     * @queryParam filter[causer_id] integer optional Filter exact user penyebab. Example: 1
+     * @queryParam filter[subject_type] string optional Filter exact tipe subjek. Example: App\Models\Invoice
+     * @queryParam filter[subject_id] integer optional Filter exact id subjek. Example: 5
+     * @queryParam filter[description] string optional Filter partial (LIKE) deskripsi. Example: invoice
+     * @queryParam search string optional Pencarian global (description + subject_type). Example: invoice
+     * @queryParam include string optional Relasi yang di-eager-load: causer,subject,tenant (pisahkan koma). Example: causer,tenant
+     * @queryParam per_page integer optional Jumlah per halaman (max 100). Example: 25
+     * @queryParam page integer optional Halaman. Example: 2
      *
      * @response scenario=success {
      *   "data": [
@@ -48,34 +67,63 @@ class ActivityLogController extends Controller
      *       "created_at": "2026-08-28T00:00:00+00:00"
      *     }
      *   ],
-     *   "meta": {"current_page": 1, "per_page": 15, "total": 1}
+     *   "links": {"first": "...?page=1", "last": "...?page=3", "next": "...?page=2", "prev": null},
+     *   "meta": {
+     *     "current_page": 2, "from": 26, "last_page": 3, "per_page": 25, "to": 50,
+     *     "total": 80, "total_filtered": 50
+     *   }
      * }
      */
     public function index(Request $request): JsonResponse
     {
-        $query = $this->activity->query(
-            $request->query('tenant_id') !== null ? (int) $request->query('tenant_id') : null
-        );
+        $tenantId = $request->query('tenant_id') !== null ? (int) $request->query('tenant_id') : null;
 
-        if ($request->query('causer_id') !== null) {
-            $query->where('causer_id', (int) $request->query('causer_id'));
-        }
-        if ($request->filled('subject_type')) {
-            $query->where('subject_type', $request->query('subject_type'));
-        }
-        if ($request->query('subject_id') !== null) {
-            $query->where('subject_id', (int) $request->query('subject_id'));
+        // total sebelum filter (padanan iTotalRecords / meta.total)
+        $total = $this->activity->query($tenantId)->count();
+
+        $query = QueryBuilder::for($this->activity->query($tenantId))
+            ->allowedSorts([
+                'id', 'description', 'subject_type', 'subject_id',
+                'causer_id', 'tenant_id', 'created_at',
+            ])
+            ->allowedFilters([
+                AllowedFilter::exact('tenant_id'),
+                AllowedFilter::exact('causer_id'),
+                AllowedFilter::exact('subject_type'),
+                AllowedFilter::exact('subject_id'),
+                AllowedFilter::partial('description'),
+            ])
+            ->allowedIncludes(['causer', 'subject', 'tenant'])
+            ->defaultSort('-created_at');
+
+        // global search (padanan search[value] data_tables_init)
+        if ($request->filled('search')) {
+            $term = $request->query('search');
+            $query->where(function ($q) use ($term) {
+                $q->where('description', 'like', "%{$term}%")
+                  ->orWhere('subject_type', 'like', "%{$term}%");
+            });
         }
 
         $perPage = min((int) $request->query('per_page', 15), 100);
-        $logs = $query->orderByDesc('created_at')->paginate($perPage);
+        $logs = $query->paginate($perPage, ['*'], 'page', (int) $request->query('page', 1))->withQueryString();
 
         return response()->json([
             'data' => $logs->items(),
+            'links' => [
+                'first' => $logs->url(1),
+                'last' => $logs->url($logs->lastPage()),
+                'next' => $logs->nextPageUrl(),
+                'prev' => $logs->previousPageUrl(),
+            ],
             'meta' => [
                 'current_page' => $logs->currentPage(),
+                'from' => $logs->firstItem(),
+                'last_page' => $logs->lastPage(),
                 'per_page' => $logs->perPage(),
-                'total' => $logs->total(),
+                'to' => $logs->lastItem(),
+                'total' => $total,
+                'total_filtered' => $logs->total(),
             ],
         ]);
     }
