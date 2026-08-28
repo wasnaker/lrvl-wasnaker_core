@@ -40,6 +40,8 @@ class MailController extends Controller
             'subject' => 'required|string|max:255',
             'view' => 'required|string',
             'data' => 'sometimes|array',
+            'queue' => 'sometimes|boolean',
+            'queue_name' => 'sometimes|nullable|string|max:120',
         ]);
 
         $success = $this->mail->send([
@@ -47,10 +49,12 @@ class MailController extends Controller
             'subject' => $validated['subject'],
             'view' => $validated['view'],
             'data' => $validated['data'] ?? [],
+            'queue' => (bool) ($validated['queue'] ?? false),
+            'queue_name' => $validated['queue_name'] ?? null,
         ]);
 
         return response()->json([
-            'message' => $success ? 'Email sent' : 'Failed to send email',
+            'message' => $success ? 'Email queued/sent' : 'Failed to send email',
             'success' => $success,
         ], $success ? 200 : 500);
     }
@@ -123,5 +127,77 @@ class MailController extends Controller
             'success' => $count > 0,
             'recipients' => $count,
         ], $count > 0 ? 200 : 500);
+    }
+
+    /**
+     * Antrean email: retry failed mail job.
+     *
+     * @authenticated
+     *
+     * @queryParam queue string Nama queue (opsional). Example: emails
+     *
+     * @response scenario=success {
+     *   "message": "Retried 2 failed job(s)", "success": true, "retried": 2
+     * }
+     */
+    public function retryQueue(Request $request): JsonResponse
+    {
+        $queue = $request->query('queue') ?: null;
+
+        $count = $this->mail->retryQueue($queue);
+
+        return response()->json([
+            'message' => "Retried {$count} failed job(s)",
+            'success' => true,
+            'retried' => $count,
+        ]);
+    }
+
+    /**
+     * Antrean email: bersihkan failed job lama.
+     *
+     * @authenticated
+     *
+     * @queryParam queue string Nama queue (opsional). Example: emails
+     * @queryParam days integer Umur maksimal failed job (hari). Example: 7
+     *
+     * @response scenario=success {
+     *   "message": "Cleaned 5 old failed job(s)", "success": true, "cleaned": 5
+     * }
+     */
+    public function cleanUpQueue(Request $request): JsonResponse
+    {
+        $queue = $request->query('queue') ?: null;
+        $days = (int) ($request->query('days', 7));
+
+        $count = $this->mail->cleanUpOldQueue($queue, max(1, $days));
+
+        return response()->json([
+            'message' => "Cleaned {$count} old failed job(s)",
+            'success' => true,
+            'cleaned' => $count,
+        ]);
+    }
+
+    /**
+     * Antrean email: jumlah job menunggu.
+     *
+     * @authenticated
+     *
+     * @queryParam queue string Nama queue (opsional). Example: emails
+     *
+     * @response scenario=success {
+     *   "data": { "pending": 3 }
+     * }
+     */
+    public function queueStatus(Request $request): JsonResponse
+    {
+        $queue = $request->query('queue') ?: null;
+
+        return response()->json([
+            'data' => [
+                'pending' => $this->mail->pendingCount($queue),
+            ],
+        ]);
     }
 }
