@@ -1,43 +1,52 @@
 #!/usr/bin/env bash
 # ============================================================
-# post-scribe-inject.sh — inject toggle collapse grup sidebar
+# post-scribe-inject.sh — perbaikan kecil untuk output apidocs
 # ------------------------------------------------------------
 # Scribe v4 (tema default) TIDAK punya klik-untuk-collapse pada
 # heading grup; buka/tutup hanya oleh scrollspy (grup aktif selalu
 # terbuka). Dengan satu grup top-level (api/v1) sidebar terkesan
-# "permanen terbuka".
+# "permanen terbuka". Script ini menambahkan:
 #
-# Script ini menambahkan JS kecil ke index.html hasil
-# `php artisan scribe:generate --force` sehingga heading grup
-# (level-1) bisa diklik untuk expand/collapse, dan state collapse
-# dipertahankan walau scrollspy mencoba membukanya lagi.
+#   1. Toggle collapse grup (klik heading level-1) — JS inline
+#      + MutationObserver melawan scrollspy + localStorage.
+#   2. Module bahasa 'http' untuk highlight.js — blok contoh
+#      respons (language-http) tidak ter-highlight tanpa ini.
 #
 # PAKAI: jalankan SETELAH setiap scribe:generate:
 #   bash scripts/post-scribe-inject.sh
-# (idempoten — aman dijalankan berkali-kali)
+# (idempoten per bagian — aman dijalankan berkali-kali)
 # ============================================================
 set -euo pipefail
 
 HTML=/www/wwwroot/apidocs.wasnaker.lan/public/index.html
-MARK='wasnaker-sidebar-toggle'
+MARK_TOGGLE='wasnaker-sidebar-toggle'
+MARK_HLJS='wasnaker-hljs-http'
 
 if [ ! -f "$HTML" ]; then
   echo "ERROR: $HTML tidak ada — jalankan scribe:generate dulu." >&2
   exit 1
 fi
 
-if grep -q "$MARK" "$HTML"; then
-  echo "inject: sudah ada ($MARK), skip."
-  exit 0
-fi
-
-python3 - "$HTML" <<'PYEOF'
+python3 - "$HTML" "$MARK_TOGGLE" "$MARK_HLJS" <<'PYEOF'
 import sys
 
-path = sys.argv[1]
+path, mark_toggle, mark_hljs = sys.argv[1], sys.argv[2], sys.argv[3]
 html = open(path).read()
+changed = False
 
-script = """
+# --- 1. module bahasa 'http' untuk highlight.js ---
+if mark_hljs not in html:
+    lang_script = (
+        '\n<script id="wasnaker-hljs-http"'
+        ' src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/languages/http.min.js"></script>'
+    )
+    html = html.replace('</body>', lang_script + '\n</body>')
+    changed = True
+    print('inject: module highlight.js bahasa http ditambahkan')
+
+# --- 2. toggle collapse grup sidebar ---
+if mark_toggle not in html:
+    toggle_script = """
 <script id="wasnaker-sidebar-toggle">
 // Klik heading grup (level-1) untuk expand/collapse subheader-nya.
 // Scribe v4 default hanya scrollspy (grup aktif selalu terbuka);
@@ -64,7 +73,6 @@ script = """
       e.preventDefault();
       toggle(h, sub);
     });
-    // terapkan state tersimpan (mis. grup di-collapse sesi lalu)
     if (collapsed.has(h.id)) { sub.classList.remove('visible'); }
   });
 
@@ -85,12 +93,12 @@ script = """
 })();
 </script>
 """
+    html = html.replace('</body>', toggle_script + '\n</body>')
+    changed = True
+    print('inject: toggle collapse grup ditambahkan')
 
-if '</body>' in html:
-    html = html.replace('</body>', script + '\n</body>')
-else:
-    html += script
+if not changed:
+    print('inject: semua sudah ada, skip.')
 
 open(path, 'w').write(html)
-print('inject: ok — toggle collapse grup ditambahkan ke index.html')
 PYEOF
