@@ -5,6 +5,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\MetaController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\RelationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/health", [ApiController::class, "health"]);
@@ -33,6 +34,10 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::get("/meta/{type}/{id}/{key}", [MetaController::class, "show"]);
     Route::put("/meta/{type}/{id}/{key}", [MetaController::class, "update"]);
     Route::delete("/meta/{type}/{id}/{key}", [MetaController::class, "destroy"]);
+
+    // Relations (inti resolver; tipe di-register module via hook)
+    Route::get("/relations/types", [RelationController::class, "types"]);
+    Route::get("/relations/{type}/{id}", [RelationController::class, "show"]);
 
     // Files (upload Laravel Storage + metadata, mirip tblfiles Perfex)
     Route::get("/files/limits", [FileController::class, "limits"]);
