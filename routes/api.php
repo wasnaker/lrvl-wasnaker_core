@@ -8,6 +8,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\NumberToWordController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\MailController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/health", [ApiController::class, "health"]);
@@ -60,4 +61,9 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::get("/files/{id}/download", [FileController::class, "download"]);
     Route::get("/files/{id}/preview", [FileController::class, "preview"]);
     Route::delete("/files/{id}", [FileController::class, "destroy"]);
+
+    // Mail (pengganti App_mailer / App_Email Perfex)
+    Route::post("/mail/send", [MailController::class, "send"]);
+    Route::post("/mail/notify", [MailController::class, "notify"]);
+    Route::post("/mail/notify-many", [MailController::class, "notifyMany"]);
 });
