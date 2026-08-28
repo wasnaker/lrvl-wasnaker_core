@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\GdprController;
@@ -106,4 +107,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tags', [TagController::class, 'index']);
     Route::post('/tags', [TagController::class, 'store']);
     Route::delete('/tags/{id}', [TagController::class, 'destroy']);
+
+    // Broadcasting (App_pusher → Laravel Broadcasting/Reverb)
+    // Auth channel private via /api/broadcasting/auth (didaftarkan withBroadcasting)
+    Route::get('/broadcast/config', [BroadcastController::class, 'config']);
+    Route::post('/broadcast/test', [BroadcastController::class, 'sendTest']);
 });
