@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
  *
  * Realtime (pengganti App_pusher Perfex) — Laravel Broadcasting + Reverb.
  * Klien: laravel-echo + pusher-js diarahkan ke server Reverb; auth channel
- * via `POST /api/broadcasting/auth` (token Sanctum).
+ * via `POST /api/v1/broadcasting/auth` (token Sanctum).
  */
 class BroadcastController extends Controller
 {

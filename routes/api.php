@@ -19,6 +19,10 @@ use App\Http\Controllers\SmsController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
+// Seluruh API bisnis + infrastruktur di-versi-kan (tanpa kecuali).
+// v1 = kontrak stabil pertama; breaking change berikutnya → v2, dst.
+Route::prefix('v1')->group(function () {
+
 Route::get('/health', [ApiController::class, 'health']);
 
 Route::name('login')->get('/login', function () {
@@ -109,7 +113,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/tags/{id}', [TagController::class, 'destroy']);
 
     // Broadcasting (App_pusher → Laravel Broadcasting/Reverb)
-    // Auth channel private via /api/broadcasting/auth (didaftarkan withBroadcasting)
+    // Auth channel private via /api/v1/broadcasting/auth (didaftarkan withBroadcasting)
     Route::get('/broadcast/config', [BroadcastController::class, 'config']);
     Route::post('/broadcast/test', [BroadcastController::class, 'sendTest']);
+});
 });

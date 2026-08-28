@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withBroadcasting(
         channels: __DIR__.'/../routes/channels.php',
-        attributes: ['middleware' => ['auth:sanctum'], 'prefix' => 'api'],
+        attributes: ['middleware' => ['auth:sanctum'], 'prefix' => 'api/v1'],
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
