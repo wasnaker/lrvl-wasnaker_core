@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * Endpoint sistem: health, login, dan user.
+ *
+ * @group api/v1
+ * @subgroup System
+ */
 class ApiController extends Controller
 {
     /**
      * Endpoint login (belum terautentikasi).
      *
      * Path tujuan saat klien belum terautentikasi (route bernama `login`).
-     *
-     * @group api/v1
-     * @subgroup System
      *
      * @response 401 {"message": "Unauthenticated."}
      */
@@ -23,9 +26,6 @@ class ApiController extends Controller
     }
 
     /**
-     * @group api/v1
-     * @subgroup System
-     *
      * Cek kesehatan API.
      *
      * Mengecek apakah layanan API berjalan dengan baik.
@@ -46,9 +46,6 @@ class ApiController extends Controller
     }
 
     /**
-     * @group api/v1
-     * @subgroup System
-     *
      * Data user yang sedang login.
      *
      * Mengembalikan data user terkini berdasarkan token Sanctum yang terkirim.

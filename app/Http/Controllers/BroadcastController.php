@@ -7,12 +7,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * @group api/v1
-     * @subgroup Broadcasting
- *
  * Realtime (pengganti App_pusher Perfex) — Laravel Broadcasting + Reverb.
  * Klien: laravel-echo + pusher-js diarahkan ke server Reverb; auth channel
  * via `POST /api/v1/broadcasting/auth` (token Sanctum).
+ *
+ * @group api/v1
+ * @subgroup Broadcasting
  */
 class BroadcastController extends Controller
 {
