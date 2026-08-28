@@ -20,7 +20,8 @@ use Illuminate\Http\Request;
  *   POST /api/tags              -> buat tag baru
  *   DELETE /api/tags/{id}       -> hapus tag
  *
- * @group Tags
+ * @group api/v1
+     * @subgroup Tags
  */
 class TagController extends Controller
 {

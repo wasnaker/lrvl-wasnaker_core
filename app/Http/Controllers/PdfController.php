@@ -21,7 +21,8 @@ use Illuminate\Http\Request;
  *   POST /api/pdf/from-html        -> render HTML string menjadi PDF
  *   POST /api/pdf/bulk-export      -> dispatch job bulk PDF (background)
  *
- * @group Pdf
+ * @group api/v1
+     * @subgroup Pdf
  */
 class PdfController extends Controller
 {

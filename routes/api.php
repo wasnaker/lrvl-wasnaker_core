@@ -25,9 +25,7 @@ Route::prefix('v1')->group(function () {
 
 Route::get('/health', [ApiController::class, 'health']);
 
-Route::name('login')->get('/login', function () {
-    return response()->json(['message' => 'Unauthenticated.'], 401);
-});
+Route::name('login')->get('/login', [ApiController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [ApiController::class, 'user']);

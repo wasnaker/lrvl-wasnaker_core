@@ -20,7 +20,8 @@ use Illuminate\Http\Request;
  *   GET /api/relations/{type}/{id}   -> data relasi (opt-in, hanya tipe terdaftar)
  *   GET /api/relations/types         -> list tipe terdaftar
  *
- * @group Relations
+ * @group api/v1
+     * @subgroup Relations
  */
 class RelationController extends Controller
 {

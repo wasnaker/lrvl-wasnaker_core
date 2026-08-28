@@ -46,7 +46,9 @@ return [
 
             // Exclude these routes even if they matched the rules above.
             'exclude' => [
-                // 'GET /health', 'admin.*'
+                // broadcasting/auth: controller framework tanpa annotation,
+                // dipanggil otomatis oleh laravel-echo (transport internal).
+                '*/broadcasting/auth',
             ],
         ],
     ],
@@ -179,7 +181,9 @@ return [
         // You can override this by listing the groups, subgroups and endpoints here in the order you want them.
         // See https://scribe.knuckles.wtf/blog/laravel-v4#easier-sorting and https://scribe.knuckles.wtf/laravel/reference/config#order for details
         // Note: does not work for `external` docs types
-        'order' => [],
+        'order' => [
+        'api/v1',
+    ],
     ],
 
     // Custom logo path. This will be used as the value of the src attribute for the <img> tag,

@@ -18,7 +18,8 @@ use Illuminate\Http\Request;
  * Endpoint:
  *   POST /api/qr-code/generate   -> generate QR, return base64 PNG / data URI / stored path
  *
- * @group QrCode
+ * @group api/v1
+     * @subgroup QrCode
  */
 class QrCodeController extends Controller
 {

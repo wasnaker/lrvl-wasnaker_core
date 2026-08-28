@@ -17,7 +17,8 @@ use Spatie\QueryBuilder\QueryBuilder;
  * Ini adalah resource REST (setiap log punya ID auto-increment),
  * berbeda dengan Settings yang key-value. Mendukung scope multi-tenant.
  *
- * @group Activity Logs
+ * @group api/v1
+     * @subgroup Activity Logs
  */
 class ActivityLogController extends Controller
 {

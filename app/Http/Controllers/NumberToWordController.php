@@ -13,7 +13,8 @@ use Illuminate\Http\Request;
  *
  * Digunakan oleh frontend saat generate invoice PDF, dokumen keuangan, dll.
  *
- * @group Utilities
+ * @group api/v1
+     * @subgroup Utilities
  */
 class NumberToWordController extends Controller
 {

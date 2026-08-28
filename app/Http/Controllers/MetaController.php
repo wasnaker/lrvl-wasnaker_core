@@ -24,7 +24,8 @@ use Illuminate\Database\Eloquent\Model;
  *
  * {type} adalah short name class yang di-allowlist (aman, bukan arbitrary FQCN).
  *
- * @group Custom Meta
+ * @group api/v1
+     * @subgroup Custom Meta
  */
 class MetaController extends Controller
 {

@@ -14,7 +14,8 @@ use Illuminate\Http\Request;
  * Diadopsi dari pola `gateways/` PerfexCRM (Stripe, Paypal, Mollie, dst).
  * Core hanya expose abstraction; setiap gateway diaktifkan konfiguratif.
  *
- * @group Payment
+ * @group api/v1
+     * @subgroup Payment
  */
 class PaymentController extends Controller
 {

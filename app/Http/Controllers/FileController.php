@@ -24,7 +24,8 @@ use Illuminate\Http\UploadedFile;
  *   DELETE /api/files/{id}             -> hapus file + meta
  *   GET    /api/files/limits           -> max upload size (utility)
  *
- * @group Files
+ * @group api/v1
+     * @subgroup Files
  */
 class FileController extends Controller
 {

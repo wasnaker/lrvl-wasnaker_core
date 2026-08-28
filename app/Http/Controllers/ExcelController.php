@@ -20,7 +20,8 @@ use Illuminate\Http\UploadedFile;
  *   POST /api/excel/export   -> export data array ke file Excel/CSV
  *   POST /api/excel/import   -> import file (multipart) menjadi baris
  *
- * @group Excel
+ * @group api/v1
+     * @subgroup Excel
  */
 class ExcelController extends Controller
 {

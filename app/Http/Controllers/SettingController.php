@@ -14,7 +14,8 @@ use Illuminate\Http\Request;
  * BUKAN CRUD klasik: key adalah identifier, bukan ID auto-increment.
  * Mendukung scope multi-tenant (tenant_id NULL = global).
  *
- * @group Settings
+ * @group api/v1
+     * @subgroup Settings
  */
 class SettingController extends Controller
 {

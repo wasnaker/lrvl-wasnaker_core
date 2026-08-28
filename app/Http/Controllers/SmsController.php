@@ -19,7 +19,8 @@ use Illuminate\Http\Request;
  *   POST /api/sms/send       -> kirim SMS via driver aktif/terpilih
  *   GET  /api/sms/drivers    -> daftar driver yang terkonfigurasi
  *
- * @group Sms
+ * @group api/v1
+     * @subgroup Sms
  */
 class SmsController extends Controller
 {

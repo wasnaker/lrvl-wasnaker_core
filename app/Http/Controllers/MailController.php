@@ -13,7 +13,8 @@ use Illuminate\Http\Request;
  *
  * Diadopsi dari `App_mailer.php` / `App_Email.php` PerfexCRM.
  *
- * @group Mail
+ * @group api/v1
+     * @subgroup Mail
  */
 class MailController extends Controller
 {

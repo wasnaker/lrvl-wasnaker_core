@@ -14,7 +14,8 @@ use Illuminate\Http\Request;
  *
  * Diadopsi dari `gdpr/` PerfexCRM.
  *
- * @group GDPR
+ * @group api/v1
+     * @subgroup GDPR
  */
 class GdprController extends Controller
 {

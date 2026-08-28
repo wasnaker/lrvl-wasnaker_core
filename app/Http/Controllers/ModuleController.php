@@ -14,7 +14,8 @@ use Illuminate\Http\Request;
  * Diadopsi dari `App_modules.php` PerfexCRM.
  * Hanya super-admin yang boleh enable/disable modul.
  *
- * @group Modules
+ * @group api/v1
+     * @subgroup Modules
  */
 class ModuleController extends Controller
 {

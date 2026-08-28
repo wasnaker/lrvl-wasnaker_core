@@ -8,6 +8,24 @@ use Illuminate\Http\Request;
 class ApiController extends Controller
 {
     /**
+     * Endpoint login (belum terautentikasi).
+     *
+     * Path tujuan saat klien belum terautentikasi (route bernama `login`).
+     *
+     * @group api/v1
+     * @subgroup System
+     *
+     * @response 401 {"message": "Unauthenticated."}
+     */
+    public function login(): JsonResponse
+    {
+        return response()->json(['message' => 'Unauthenticated.'], 401);
+    }
+
+    /**
+     * @group api/v1
+     * @subgroup System
+     *
      * Cek kesehatan API.
      *
      * Mengecek apakah layanan API berjalan dengan baik.
@@ -28,6 +46,9 @@ class ApiController extends Controller
     }
 
     /**
+     * @group api/v1
+     * @subgroup System
+     *
      * Data user yang sedang login.
      *
      * Mengembalikan data user terkini berdasarkan token Sanctum yang terkirim.
