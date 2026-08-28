@@ -64,7 +64,7 @@ class FileService
      * @param string $size
      * @return int
      */
-    private function parse_size(string $size): int
+    public function parse_size(string $size): int
     {
         $size = trim($size);
 
@@ -149,5 +149,51 @@ class FileService
         }
 
         return ($base !== '' ? $base . '_' : '') . $unique;
+    }
+
+    /**
+     * Simpan uploaded file ke disk (Laravel Storage), path per-tenant.
+     *
+     * Pola Laravel standar + struktur mirip Perfex (uploads/{rel_type}/{rel_id}/).
+     * File fisik di storage, metadata dicatat oleh caller (Attachment model).
+     *
+     * @param \Illuminate\Http\UploadedFile $file
+     * @param string $relType  mis. 'invoice'
+     * @param int    $relId
+     * @param int|null $tenantId
+     * @param string $disk     'local' (private) | 'public'
+     * @return string path relatif hasil store()
+     */
+    public function storeUpload(
+        \Illuminate\Http\UploadedFile $file,
+        string $relType,
+        int $relId,
+        ?int $tenantId = null,
+        string $disk = 'local'
+    ): string {
+        $dir = 'tenants/' . ($tenantId ?? 'global') . '/' . $relType . '/' . $relId;
+        $name = $this->unique_filename($file->getClientOriginalName());
+
+        return $file->storeAs($dir, $name, $disk);
+    }
+
+    /**
+     * Buat response download/inline untuk attachment.
+     *
+     * @param \App\Models\Attachment $attachment
+     * @param bool $inline true=preview (image), false=force download
+     */
+    public function downloadResponse(\App\Models\Attachment $attachment, bool $inline = false): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        $storage = \Illuminate\Support\Facades\Storage::disk($attachment->disk);
+        $fullPath = $storage->path($attachment->path);
+
+        $disposition = $inline ? 'inline' : 'attachment';
+        $filename = $attachment->original_name;
+
+        return response()->file($fullPath, [
+            'Content-Type' => $attachment->mime_type ?? 'application/octet-stream',
+            'Content-Disposition' => $disposition . '; filename="' . $filename . '"',
+        ]);
     }
 }
