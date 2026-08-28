@@ -11,6 +11,7 @@
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^2.10.1",
         "nwidart/laravel-modules": "*",
+        "stripe/stripe-php": "^21.3",
         "wasnaker/sales-module": "@dev"
     },
     "require-dev": {
