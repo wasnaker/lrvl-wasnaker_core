@@ -10,6 +10,7 @@ use App\Http\Controllers\NumberToWordController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\GdprController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/health", [ApiController::class, "health"]);
@@ -71,4 +72,9 @@ Route::middleware("auth:sanctum")->group(function () {
     // Payment Gateway abstraction (gateways/ library)
     Route::get("/payment/gateways", [PaymentController::class, "index"]);
     Route::post("/payment/intent", [PaymentController::class, "createIntent"]);
+
+    // GDPR / data privacy (gdpr/ library)
+    Route::get("/gdpr/export", [GdprController::class, "export"]);
+    Route::post("/gdpr/anonymize", [GdprController::class, "anonymize"]);
+    Route::post("/gdpr/delete", [GdprController::class, "delete"]);
 });
