@@ -7,6 +7,7 @@ use App\Http\Controllers\MetaController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\NumberToWordController;
+use App\Http\Controllers\ModuleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/health", [ApiController::class, "health"]);
@@ -43,6 +44,14 @@ Route::middleware("auth:sanctum")->group(function () {
     // NumberToWord (terbilang angka untuk invoice/PDF)
     Route::post("/number-to-word/convert", [NumberToWordController::class, "convert"]);
     Route::post("/number-to-word/convert-indian", [NumberToWordController::class, "convertIndian"]);
+
+    // Modules (discovery & management, dari App_modules Perfex)
+    Route::get("/modules", [ModuleController::class, "index"]);
+    Route::get("/modules/enabled", [ModuleController::class, "enabled"]);
+    Route::get("/modules/{name}", [ModuleController::class, "show"]);
+    Route::get("/modules/{name}/status", [ModuleController::class, "status"]);
+    Route::post("/modules/{name}/enable", [ModuleController::class, "enable"]);
+    Route::post("/modules/{name}/disable", [ModuleController::class, "disable"]);
 
     // Files (upload Laravel Storage + metadata, mirip tblfiles Perfex)
     Route::get("/files/limits", [FileController::class, "limits"]);
