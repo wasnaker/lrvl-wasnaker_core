@@ -89,7 +89,7 @@ class MetaController extends Controller
      * @response scenario=success {
      *   "key": "theme", "value": "dark"
      * }
-     * @response status=404 scenario=tidak ditemukan {
+     * @response status=404 scenario="tidak ditemukan" {
      *   "message": "Meta not found"
      * }
      */
@@ -181,7 +181,7 @@ class MetaController extends Controller
      * @response scenario=success {
      *   "message": "Meta deleted"
      * }
-     * @response status=404 scenario=tidak ditemukan {
+     * @response status=404 scenario="tidak ditemukan" {
      *   "message": "Meta not found"
      * }
      */

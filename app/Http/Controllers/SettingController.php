@@ -36,7 +36,7 @@ class SettingController extends Controller
      *   "value": "INV-",
      *   "tenant_id": null
      * }
-     * @response status=404 scenario=tidak ditemukan {
+     * @response status=404 scenario="tidak ditemukan" {
      *   "message": "Setting not found"
      * }
      */
@@ -99,7 +99,7 @@ class SettingController extends Controller
      * @response scenario=success {
      *   "message": "Setting deleted"
      * }
-     * @response status=404 scenario=tidak ditemukan {
+     * @response status=404 scenario="tidak ditemukan" {
      *   "message": "Setting not found"
      * }
      */

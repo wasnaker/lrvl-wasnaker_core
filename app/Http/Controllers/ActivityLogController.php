@@ -147,7 +147,7 @@ class ActivityLogController extends Controller
      *   "properties": {"ip": "127.0.0.1"},
      *   "created_at": "2026-08-28T00:00:00+00:00"
      * }
-     * @response status=404 scenario=tidak ditemukan {
+     * @response status=404 scenario="tidak ditemukan" {
      *   "message": "Activity log not found"
      * }
      */
@@ -220,7 +220,7 @@ class ActivityLogController extends Controller
      * @response scenario=success {
      *   "message": "Activity log deleted"
      * }
-     * @response status=404 scenario=tidak ditemukan {
+     * @response status=404 scenario="tidak ditemukan" {
      *   "message": "Activity log not found"
      * }
      */
