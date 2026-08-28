@@ -6,6 +6,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\MetaController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RelationController;
+use App\Http\Controllers\NumberToWordController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/health", [ApiController::class, "health"]);
@@ -38,6 +39,10 @@ Route::middleware("auth:sanctum")->group(function () {
     // Relations (inti resolver; tipe di-register module via hook)
     Route::get("/relations/types", [RelationController::class, "types"]);
     Route::get("/relations/{type}/{id}", [RelationController::class, "show"]);
+
+    // NumberToWord (terbilang angka untuk invoice/PDF)
+    Route::post("/number-to-word/convert", [NumberToWordController::class, "convert"]);
+    Route::post("/number-to-word/convert-indian", [NumberToWordController::class, "convertIndian"]);
 
     // Files (upload Laravel Storage + metadata, mirip tblfiles Perfex)
     Route::get("/files/limits", [FileController::class, "limits"]);
