@@ -3,14 +3,15 @@
 # post-scribe-inject.sh — perbaikan kecil untuk output apidocs
 # ------------------------------------------------------------
 # Scribe v4 (tema default) TIDAK punya klik-untuk-collapse pada
-# heading grup; buka/tutup hanya oleh scrollspy (grup aktif selalu
-# terbuka). Dengan satu grup top-level (api/v1) sidebar terkesan
-# "permanen terbuka". Script ini menambahkan:
+# heading menu; buka/tutup hanya oleh scrollspy (semua subheader
+# grup aktif selalu dibuka). Script ini menambahkan:
 #
-#   1. Toggle collapse grup (klik heading level-1) — JS inline
-#      + MutationObserver melawan scrollspy + localStorage.
-#   2. Module bahasa 'http' untuk highlight.js — blok contoh
-#      respons (language-http) tidak ter-highlight tanpa ini.
+#   1. Toggle collapse (accordion) — klik heading grup (api/v1)
+#      ATAU heading subgroup (System, Settings, ...) untuk
+#      expand/collapse; MutationObserver melawan scrollspy;
+#      state tersimpan di localStorage.
+#   2. Ikon caret (▸/▾) di heading yang bisa di-collapse.
+#   3. Module bahasa 'http' untuk highlight.js.
 #
 # PAKAI: jalankan SETELAH setiap scribe:generate:
 #   bash scripts/post-scribe-inject.sh
@@ -19,7 +20,7 @@
 set -euo pipefail
 
 HTML=/www/wwwroot/apidocs.wasnaker.lan/public/index.html
-MARK_TOGGLE='wasnaker-sidebar-toggle'
+MARK_TOGGLE='wasnaker-sidebar-toggle-v3'
 MARK_HLJS='wasnaker-hljs-http'
 
 if [ ! -f "$HTML" ]; then
@@ -28,6 +29,7 @@ if [ ! -f "$HTML" ]; then
 fi
 
 python3 - "$HTML" "$MARK_TOGGLE" "$MARK_HLJS" <<'PYEOF'
+import re
 import sys
 
 path, mark_toggle, mark_hljs = sys.argv[1], sys.argv[2], sys.argv[3]
@@ -44,46 +46,85 @@ if mark_hljs not in html:
     changed = True
     print('inject: module highlight.js bahasa http ditambahkan')
 
-# --- 2. toggle collapse grup sidebar ---
+# --- 2. toggle collapse (v2: grup + subgroup) ---
 if mark_toggle not in html:
+    # buang blok versi lama (v1/v2 script + style) bila ada —
+    # kalau tidak, handler dobel -> toggle dua kali = no-op
+    html = re.sub(r'\n<script id="wasnaker-sidebar-toggle[^"]*">.*?</script>\n', '\n', html, flags=re.S)
+    html = re.sub(r'\n<style id="wasnaker-sidebar-toggle[^"]*">.*?</style>\n', '\n', html, flags=re.S)
+
+    css = """
+<style id="wasnaker-sidebar-toggle-css">
+#toc a.wasnaker-caret::before { content: '\\25B8  '; font-size: .8em; }
+#toc a.wasnaker-caret.wasnaker-open::before { content: '\\25BE  '; }
+</style>
+"""
+
     toggle_script = """
-<script id="wasnaker-sidebar-toggle">
-// Klik heading grup (level-1) untuk expand/collapse subheader-nya.
-// Scribe v4 default hanya scrollspy (grup aktif selalu terbuka);
-// MutationObserver menjaga state collapse walau tema menambah .visible lagi.
+<script id="wasnaker-sidebar-toggle-v3">
+// Accordion sidebar: klik heading grup (level-1) atau subgroup (level-2)
+// untuk expand/collapse. Scrollspy tema selalu membuka subheader grup aktif;
+// MutationObserver + localStorage menjaga state collapse.
 (function () {
-  var KEY = 'wasnaker-collapsed-groups';
+  var KEY = 'wasnaker-collapsed-groups-v2';
   var collapsed = new Set();
   try { collapsed = new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); } catch (e) {}
 
-  function toggle(h, sub, force) {
-    var isVisible = sub.classList.contains('visible');
-    var willCollapse = force !== undefined ? !force : isVisible;
-    sub.classList.toggle('visible', !willCollapse);
-    if (willCollapse) collapsed.add(h.id); else collapsed.delete(h.id);
-    try { localStorage.setItem(KEY, JSON.stringify(Array.from(collapsed))); } catch (e) {}
-  }
+  function keyFor(sub) { return sub.parentElement.id + '::' + sub.id; }
 
-  document.querySelectorAll('#toc .tocify-header').forEach(function (h) {
-    var link = h.querySelector(':scope > li > a');
-    var sub = h.querySelector(':scope > .tocify-subheader');
+  function bind(link, sub) {
     if (!link || !sub) return;
+    link.classList.add('wasnaker-caret');
     link.style.cursor = 'pointer';
     link.addEventListener('click', function (e) {
       e.preventDefault();
-      toggle(h, sub);
+      var k = keyFor(sub);
+      var willCollapse = sub.classList.contains('visible');
+      sub.classList.toggle('visible', !willCollapse);
+      link.classList.toggle('wasnaker-open', !willCollapse);
+      if (willCollapse) collapsed.add(k); else collapsed.delete(k);
+      try { localStorage.setItem(KEY, JSON.stringify(Array.from(collapsed))); } catch (err) {}
     });
-    if (collapsed.has(h.id)) { sub.classList.remove('visible'); }
+    // terapkan state tersimpan + sinkronkan caret dengan state aktual
+    if (collapsed.has(keyFor(sub))) {
+      sub.classList.remove('visible');
+      link.classList.remove('wasnaker-open');
+    } else {
+      link.classList.toggle('wasnaker-open', sub.classList.contains('visible'));
+    }
+  }
+
+  // level-1: grup (api/v1, ...)
+  document.querySelectorAll('#toc .tocify-header').forEach(function (h) {
+    bind(h.querySelector(':scope > li > a'), h.querySelector(':scope > .tocify-subheader'));
   });
 
-  // lawan scrollspy: hapus .visible yang ditambahkan tema untuk grup collapsed
+  // level-2: subgroup (System, Settings, ...) — ul subheader adalah sibling
+  document.querySelectorAll('#toc li.tocify-item.level-2').forEach(function (li) {
+    var sub = li.nextElementSibling;
+    if (sub && sub.classList.contains('tocify-subheader')) {
+      bind(li.querySelector(':scope > a'), sub);
+    }
+  });
+
+  // lawan scrollspy: hapus .visible yang ditambahkan tema untuk item collapsed,
+  // dan sinkronkan caret (wasnaker-open) dengan state subheader aktual
   var observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (m) {
       if (m.type !== 'attributes' || m.attributeName !== 'class') return;
       var sub = m.target;
-      var header = sub.parentElement;
-      if (header && collapsed.has(header.id) && sub.classList.contains('visible')) {
-        sub.classList.remove('visible');
+      if (!sub.classList.contains('tocify-subheader')) return;
+      var link = sub.previousElementSibling && sub.previousElementSibling.classList.contains('level-2')
+        ? sub.previousElementSibling.querySelector('a')
+        : sub.parentElement.querySelector(':scope > li > a');
+      if (!link) return;
+      if (collapsed.has(keyFor(sub))) {
+        if (sub.classList.contains('visible')) {
+          sub.classList.remove('visible');
+          link.classList.remove('wasnaker-open');
+        }
+      } else {
+        link.classList.toggle('wasnaker-open', sub.classList.contains('visible'));
       }
     });
   });
@@ -93,9 +134,9 @@ if mark_toggle not in html:
 })();
 </script>
 """
-    html = html.replace('</body>', toggle_script + '\n</body>')
+    html = html.replace('</body>', css + toggle_script + '\n</body>')
     changed = True
-    print('inject: toggle collapse grup ditambahkan')
+    print('inject: accordion v3 (grup + subgroup) + caret ditambahkan')
 
 if not changed:
     print('inject: semua sudah ada, skip.')
