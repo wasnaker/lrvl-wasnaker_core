@@ -16,6 +16,7 @@ use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SmsController;
+use App\Http\Controllers\SystemController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
@@ -56,13 +57,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/number-to-word/convert', [NumberToWordController::class, 'convert']);
     Route::post('/number-to-word/convert-indian', [NumberToWordController::class, 'convertIndian']);
 
-    // Modules (discovery & management, dari App_modules Perfex)
+    // Modules (discovery & management, dari App_modules + App_module_installer Perfex)
     Route::get('/modules', [ModuleController::class, 'index']);
     Route::get('/modules/enabled', [ModuleController::class, 'enabled']);
+    Route::post('/modules/install', [ModuleController::class, 'install']);
     Route::get('/modules/{name}', [ModuleController::class, 'show']);
     Route::get('/modules/{name}/status', [ModuleController::class, 'status']);
     Route::post('/modules/{name}/enable', [ModuleController::class, 'enable']);
     Route::post('/modules/{name}/disable', [ModuleController::class, 'disable']);
+    Route::post('/modules/{name}/uninstall', [ModuleController::class, 'uninstall']);
+
+    // System (utilitas aplikasi, sisa App.php Perfex: get_available_languages)
+    Route::get('/system/languages', [SystemController::class, 'languages']);
 
     // Files (upload Laravel Storage + metadata, mirip tblfiles Perfex)
     Route::get('/files/limits', [FileController::class, 'limits']);

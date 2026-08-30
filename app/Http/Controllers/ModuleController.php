@@ -139,4 +139,70 @@ class ModuleController extends Controller
             'installed' => $module['installed'],
         ]);
     }
+
+    /**
+     * Install modul baru dari upload zip.
+     *
+     * Zip wajib berisi `module.json` (di root atau dalam satu folder
+     * top-level). Modul langsung di-enable dan migrasinya dijalankan.
+     * Diadopsi dari `App_module_installer.php` PerfexCRM.
+     *
+     * @authenticated
+     *
+     * @bodyParam file file required File zip modul (maks 20MB).
+     *
+     * @response status=200 scenario=success {
+     *   "message": "Module 'Demo' installed",
+     *   "data": {"name":"Demo","enabled":true}
+     * }
+     * @response status=422 scenario=invalid {
+     *   "message": "File zip modul tidak valid atau modul sudah terinstall"
+     * }
+     */
+    public function install(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:zip', 'max:20480'],
+        ]);
+
+        $module = $this->modules->installFromZip($request->file('file')->getRealPath());
+
+        if (!$module) {
+            return response()->json([
+                'message' => 'File zip modul tidak valid atau modul sudah terinstall',
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => "Module '{$module['name']}' installed",
+            'data'    => $module,
+        ]);
+    }
+
+    /**
+     * Uninstall modul: nonaktifkan; hapus file hanya dengan ?purge=1.
+     *
+     * @authenticated
+     *
+     * @urlParam name string required Nama modul. Example: demo
+     * @queryParam purge boolean Hapus direktori modul dari disk. Example: false
+     *
+     * @response scenario=success {"message":"Module 'demo' uninstalled","purge":false}
+     * @response status=404 scenario=not-found {"message":"Module not found"}
+     */
+    public function uninstall(string $name, Request $request): JsonResponse
+    {
+        $purge = filter_var($request->query('purge', false), FILTER_VALIDATE_BOOL);
+
+        $ok = $this->modules->uninstall($name, $purge);
+
+        if (!$ok) {
+            return response()->json(['message' => 'Module not found'], 404);
+        }
+
+        return response()->json([
+            'message' => "Module '{$name}' uninstalled",
+            'purge'   => $purge,
+        ]);
+    }
 }
