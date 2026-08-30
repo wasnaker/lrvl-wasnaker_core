@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "07335d7622c081279b630b70d8aba88e",
+    "content-hash": "db476a6a6a67ef939458bf30041c6082",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -5866,6 +5866,49 @@
             "time": "2025-02-20T15:51:22+00:00"
         },
         {
+            "name": "spine/laravel-spine",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "/www/wwwroot/laravelspine/public_html",
+                "reference": "0a5c2bb20e4015e9e3d714a92dc4daad18e9189b"
+            },
+            "require": {
+                "laravel/framework": "^12.0",
+                "nwidart/laravel-modules": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-query-builder": "^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spine\\SpineServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spine\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "The modular core for building business applications. API-first, modular via nwidart/laravel-modules, Sanctum + Scribe + API versioning.",
+            "keywords": [
+                "api",
+                "core",
+                "headless",
+                "laravel",
+                "modular",
+                "modules"
+            ],
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
             "name": "stripe/stripe-php",
             "version": "v21.3.0",
             "source": {
@@ -8798,7 +8841,7 @@
             "dist": {
                 "type": "path",
                 "url": "../wasnaker-sales-module",
-                "reference": "ff32c808088eabb4f0e078b0bee33dfc5e6a13a8"
+                "reference": "607e051e44df73d4fbca8fe6a90d70f1ef4cfc02"
             },
             "require": {
                 "php": "^8.2"
@@ -11596,6 +11639,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "spine/laravel-spine": 20,
         "wasnaker/sales-module": 20
     },
     "prefer-stable": true,
