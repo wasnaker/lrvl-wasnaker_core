@@ -3,7 +3,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
@@ -18,8 +21,7 @@
         "spatie/laravel-query-builder": "^6.4",
         "spatie/laravel-tags": "^4.12",
         "spine/laravel-spine": "@dev",
-        "stripe/stripe-php": "^21.3",
-        "wasnaker/sales-module": "@dev"
+        "stripe/stripe-php": "^21.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -35,7 +37,8 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Modules\\": "modules/"
         }
     },
     "autoload-dev": {
@@ -81,16 +84,8 @@
     },
     "repositories": [
         {
-            "name": "spine",
-            "type": "path",
-            "url": "/www/wwwroot/laravelspine/public_html"
-        },
-        {
-            "type": "path",
-            "url": "../wasnaker-sales-module",
-            "options": {
-                "symlink": true
-            }
+            "type": "vcs",
+            "url": "https://github.com/laravelspine/laravelspine"
         }
     ],
     "extra": {
