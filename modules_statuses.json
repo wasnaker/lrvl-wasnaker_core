@@ -3,5 +3,7 @@
     "Todo": true,
     "Region": true,
     "Vat": true,
-    "Customer": true
+    "Customer": true,
+    "Surveyor": true,
+    "Association": true
 }
