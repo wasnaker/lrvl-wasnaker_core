@@ -14,4 +14,9 @@ return [
     'settings' => [
         'restrict' => true,
     ],
+
+    // Guard RBAC untuk spine:rbac:sync. Konsumen API-only pakai 'sanctum'.
+    'rbac' => [
+        'guard' => 'sanctum',
+    ],
 ];

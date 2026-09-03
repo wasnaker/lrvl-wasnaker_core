@@ -14,7 +14,7 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $features = ['users', 'roles', 'settings'];
+        $features = ['users', 'roles', 'settings', 'region'];
 
         foreach ($features as $feature) {
             foreach (['view', 'create', 'edit', 'delete'] as $capability) {
@@ -30,6 +30,10 @@ class RolePermissionSeeder extends Seeder
         $admin = Role::findOrCreate('admin', 'sanctum');
         // Admin = super-admin: selalu sinkron semua permission (idempotent).
         $admin->syncPermissions(Permission::all());
+
+        // Staff dibuat kosong di sini — permission datang dari grants tiap
+        // modul (region, customer, vat, dst.) via spine:rbac:sync.
+        Role::findOrCreate('staff', 'sanctum');
 
         $adminUser = \App\Models\User::where('email', 'admin@wasnaker.lan')->first();
         $adminUser?->assignRole('admin');

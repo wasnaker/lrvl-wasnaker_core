@@ -1,5 +1,7 @@
 {
     "Events": true,
     "Todo": true,
-    "Region": true
+    "Region": true,
+    "Vat": true,
+    "Customer": true
 }

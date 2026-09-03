@@ -5907,12 +5907,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravelspine/laravelspine.git",
-                "reference": "350530cd3e0eb56b799cf56dd1d04d6d540f3409"
+                "reference": "884b057ae2b24653f1d2c280debdf03d9d3c79bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravelspine/laravelspine/zipball/350530cd3e0eb56b799cf56dd1d04d6d540f3409",
-                "reference": "350530cd3e0eb56b799cf56dd1d04d6d540f3409",
+                "url": "https://api.github.com/repos/laravelspine/laravelspine/zipball/884b057ae2b24653f1d2c280debdf03d9d3c79bd",
+                "reference": "884b057ae2b24653f1d2c280debdf03d9d3c79bd",
                 "shasum": ""
             },
             "require": {
@@ -5923,6 +5923,7 @@
                 "maatwebsite/excel": "^4.0",
                 "nwidart/laravel-modules": "^12.0",
                 "php": "^8.2",
+                "spatie/laravel-permission": "^8.3",
                 "spatie/laravel-query-builder": "^6.0",
                 "spatie/laravel-tags": "^4.0"
             },
@@ -5956,7 +5957,7 @@
                 "source": "https://github.com/laravelspine/laravelspine/tree/main",
                 "issues": "https://github.com/laravelspine/laravelspine/issues"
             },
-            "time": "2026-09-02T11:38:50+00:00"
+            "time": "2026-09-03T02:10:53+00:00"
         },
         {
             "name": "stripe/stripe-php",
