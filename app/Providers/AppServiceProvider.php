@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Super-admin (role "admin") melewati semua permission check.
+        Gate::before(function ($user, $ability) {
+            if (method_exists($user, 'hasRole') && $user->hasRole(config('spine.auth.super_admin_role', 'admin'))) {
+                return true;
+            }
+
+            return null;
+        });
     }
 }

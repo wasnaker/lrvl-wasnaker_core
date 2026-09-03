@@ -16,7 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         attributes: ['middleware' => ['auth:sanctum'], 'prefix' => 'api/v1'],
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'role'       => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e, $request) {
