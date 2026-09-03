@@ -1,0 +1,3 @@
+[submodule "modules/Agency"]
+	path = modules/Agency
+	url = https://github.com/wasnaker/spine-agency.git
