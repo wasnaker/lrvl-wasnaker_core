@@ -29,7 +29,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $appends = ['access'];
+    protected $appends = [];
 
     /**
      * The attributes that are mass assignable.
@@ -79,5 +79,14 @@ class User extends Authenticatable
             'roles' => $this->getRoleNames()->all(),
             'permissions' => $this->getAllPermissions()->pluck('name')->all(),
         ];
+    }
+
+    /**
+     * Profil staff (realname/NIP/jabatan) — 1:1. Optionlist pengawas dll
+     * diambil dari sini (realname), bukan username/email.
+     */
+    public function agencyStaff()
+    {
+        return $this->hasOne(\Modules\Agency\Models\AgencyStaff::class, 'user_id');
     }
 }
