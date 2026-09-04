@@ -15,6 +15,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', [ApiController::class, 'user']);
         Route::put('/user', [ApiController::class, 'updateProfile']);
+        Route::get('/user/company', [ApiController::class, 'company']);
         Route::post('/user/avatar', [ApiController::class, 'uploadAvatar']);
         Route::delete('/user/avatar', [ApiController::class, 'destroyAvatar']);
 

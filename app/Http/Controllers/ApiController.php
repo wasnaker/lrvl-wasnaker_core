@@ -6,6 +6,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Modules\Customer\Models\Customer;
+use Modules\Surveyor\Models\Surveyor;
 
 /**
  * Endpoint sistem: health, login, dan user.
@@ -15,6 +17,14 @@ use Illuminate\Support\Facades\Storage;
  */
 class ApiController extends Controller
 {
+    /** Relasi yang disertakan utk entity HO/cabang (company & branches). */
+    private const ENTITY_WITH = [
+        'vat:id,npwp,name',
+        'province:id,name',
+        'regency:id,name',
+        'admin:id,name',
+    ];
+
     /**
      * Endpoint login (belum terautentikasi).
      *
@@ -147,5 +157,66 @@ class ApiController extends Controller
         }
 
         return response()->json($user);
+    }
+
+    /**
+     * Company + branches milik user yang login (tab My Company / My Branch).
+     *
+     * Resolusi entity sama dengan pola ActorResolver (Connection): user = admin
+     * entity (customers.admin_id / surveyors.admin_id) — mencakup HO maupun
+     * cabang. Branch = row type='branch' dgn parent_id -> HO.
+     *
+     * @authenticated
+     *
+     * @response scenario="user di HO" {
+     *   "type": "customer",
+     *   "company": { "id": 57, "code": "ALPHA", "type": "customer" },
+     *   "entity": { "id": 57, "code": "ALPHA", "type": "customer", "parent_id": null },
+     *   "branches": [ { "id": 78, "code": "A01", "type": "branch" } ]
+     * }
+     */
+    public function company(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $customer = Customer::where('admin_id', $user->id)->first();
+        if ($customer) {
+            return response()->json($this->companyPayload('customer', $customer));
+        }
+
+        $surveyor = Surveyor::where('admin_id', $user->id)->first();
+        if ($surveyor) {
+            return response()->json($this->companyPayload('surveyor', $surveyor));
+        }
+
+        return response()->json(['type' => null, 'company' => null, 'entity' => null, 'branches' => []]);
+    }
+
+    /**
+     * Susun payload company utk satu world (customer/surveyor).
+     *
+     * @param  'customer'|'surveyor'  $type
+     * @param  Customer|Surveyor  $entity  row entity user (HO atau cabang)
+     */
+    private function companyPayload(string $type, $entity): array
+    {
+        $model = $type === 'customer' ? Customer::class : Surveyor::class;
+
+        // HO = row type HO; kalau user di cabang, HO = parent-nya.
+        $company = $entity->type === 'branch'
+            ? $model::with(self::ENTITY_WITH)->find($entity->parent_id)
+            : $entity->load(self::ENTITY_WITH);
+
+        // Cabang milik user: HO -> semua children; user cabang -> dirinya sendiri.
+        $branches = $entity->type === 'branch'
+            ? collect([$entity->fresh(self::ENTITY_WITH)])
+            : $model::where('parent_id', $entity->id)->where('type', 'branch')->with(self::ENTITY_WITH)->orderBy('id')->get();
+
+        return [
+            'type'     => $type,
+            'company'  => $company,
+            'entity'   => $entity->only(['id', 'code', 'name', 'type', 'parent_id']),
+            'branches' => $branches,
+        ];
     }
 }
