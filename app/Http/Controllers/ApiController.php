@@ -6,6 +6,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Modules\Agency\Models\Agency;
+use Modules\Association\Models\Association;
 use Modules\Customer\Models\Customer;
 use Modules\Surveyor\Models\Surveyor;
 
@@ -190,6 +192,48 @@ class ApiController extends Controller
         }
 
         return response()->json(['type' => null, 'company' => null, 'entity' => null, 'branches' => []]);
+    }
+
+    /**
+     * Entity tempat user yang SEDANG LOGIN bernaung (banner "logged as").
+     *
+     * Resolve by user id (admin_id) lintas 4 world entity — berlaku utk siapa
+     * pun pemegang token (admin asli maupun hasil impersonate).
+     *
+     * @authenticated
+     *
+     * @response scenario=success {
+     *   "type": "customer",
+     *   "entity": { "id": 78, "code": "A01", "name": "Cabang Jawa Barat", "type": "branch" }
+     * }
+     */
+    public function entity(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $worlds = [
+            'customer'    => Customer::where('admin_id', $user->id)->first(),
+            'surveyor'    => Surveyor::where('admin_id', $user->id)->first(),
+            'agency'      => Agency::where('admin_id', $user->id)->first(),
+            'association' => Association::where('admin_id', $user->id)->first(),
+        ];
+
+        foreach ($worlds as $type => $entity) {
+            if ($entity) {
+                return response()->json([
+                    'type'   => $type,
+                    'entity' => [
+                        'id'        => $entity->id,
+                        'code'      => $entity->code ?? null,
+                        'name'      => $entity->name,
+                        'type'      => $entity->type ?? $type,
+                        'parent_id' => $entity->parent_id ?? null,
+                    ],
+                ]);
+            }
+        }
+
+        return response()->json(['type' => null, 'entity' => null]);
     }
 
     /**
