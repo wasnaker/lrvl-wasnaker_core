@@ -89,4 +89,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(\Modules\Agency\Models\AgencyStaff::class, 'user_id');
     }
+
+    /**
+     * Profil staf platform (realname/jabatan/departemen) — 1:1.
+     */
+    public function platformStaff()
+    {
+        return $this->hasOne(\Modules\Platform\Models\PlatformStaff::class, 'user_id');
+    }
 }

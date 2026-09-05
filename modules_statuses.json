@@ -1,9 +1,13 @@
 {
-    "Events": true,
-    "Todo": true,
-    "Region": true,
-    "Vat": true,
+    "Agency": true,
+    "Association": true,
+    "Connection": true,
     "Customer": true,
+    "Events": true,
+    "Impersonate": true,
+    "Region": true,
     "Surveyor": true,
-    "Association": true
+    "Todo": true,
+    "Vat": true,
+    "Platform": true
 }
