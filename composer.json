@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0",
+        "laravel/octane": "^2.19",
         "laravel/reverb": "^1.11",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^2.10.1",
@@ -84,6 +85,13 @@
         {
             "type": "vcs",
             "url": "https://github.com/laravelspine/laravelspine"
+        },
+        {
+            "type": "path",
+            "url": "modules/*",
+            "options": {
+                "symlink": false
+            }
         }
     ],
     "extra": {

@@ -40,11 +40,13 @@ class LogEventActivity
             return;
         }
 
+        $changes = $event->changes;
+
         $this->activityLog->log(
-            "Event updated: " . $this->label($event->entity),
+            "Event updated: " . $this->label($event->entity) . " (" . $this->describe($changes) . ")",
             $event->entity,
             $this->user(),
-            ['event' => 'updated', 'changes' => $event->changes],
+            ['event' => 'updated', 'changes' => $changes],
         );
     }
 
@@ -62,6 +64,22 @@ class LogEventActivity
             null,
             $event->entityType,
         );
+    }
+
+    private function describe(array $changes): string
+    {
+        $parts = [];
+
+        foreach ($changes as $field => $change) {
+            if (in_array($field, ['updated_at', 'remember_token'], true)) {
+                continue;
+            }
+
+            $label = Event::labels()[$field] ?? $field;
+            $parts[] = $label . ': ' . $change['old'] . ' -> ' . $change['new'];
+        }
+
+        return implode(', ', $parts);
     }
 
     private function label($entity): string

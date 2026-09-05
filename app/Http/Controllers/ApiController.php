@@ -77,7 +77,7 @@ class ApiController extends Controller
      */
     public function user(Request $request): JsonResponse
     {
-        return response()->json($request->user());
+        return response()->json($request->user()->append('access'));
     }
 
     /**

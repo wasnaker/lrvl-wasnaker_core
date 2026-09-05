@@ -25,6 +25,17 @@ class Event extends Model
         'end'   => 'datetime',
     ];
 
+    public static function labels(): array
+    {
+        return [
+            'title'       => 'Judul',
+            'description' => 'Deskripsi',
+            'start'       => 'Mulai',
+            'end'         => 'Selesai',
+            'color'       => 'Warna',
+        ];
+    }
+
     /**
      * HasUlids default mengisi PRIMARY KEY — override agar mengisi kolom 'ulid'.
      */
