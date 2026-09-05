@@ -1,13 +1,14 @@
 {
-    "Agency": true,
-    "Association": true,
-    "Connection": true,
-    "Customer": true,
-    "Events": true,
-    "Impersonate": true,
-    "Region": true,
-    "Surveyor": true,
-    "Todo": true,
-    "Vat": true,
-    "Platform": true
+  "Agency": true,
+  "Association": true,
+  "Connection": true,
+  "Customer": true,
+  "Events": true,
+  "Impersonate": true,
+  "Region": true,
+  "Surveyor": true,
+  "Todo": true,
+  "Vat": true,
+  "Platform": true,
+  "Referral": true
 }
