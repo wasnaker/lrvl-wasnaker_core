@@ -3,7 +3,7 @@
   "Association": true,
   "Connection": true,
   "Customer": true,
-  "Events": true,
+  "Calendar": true,
   "Impersonate": true,
   "Region": true,
   "Surveyor": true,
