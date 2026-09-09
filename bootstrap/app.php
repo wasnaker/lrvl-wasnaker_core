@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role'       => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'membership.capability' => \Modules\Membership\Http\Middleware\CapabilityMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
