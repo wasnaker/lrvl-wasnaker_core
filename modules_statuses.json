@@ -12,5 +12,6 @@
   "Vat": true,
   "Platform": true,
   "Referral": true,
-  "Rfq": true
+  "Rfq": true,
+  "Workflow": true
 }
