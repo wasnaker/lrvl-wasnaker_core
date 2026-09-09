@@ -4,11 +4,13 @@
   "Connection": true,
   "Customer": true,
   "Calendar": true,
+  "Equipment": true,
   "Impersonate": true,
   "Region": true,
   "Surveyor": true,
   "Todo": true,
   "Vat": true,
   "Platform": true,
-  "Referral": true
+  "Referral": true,
+  "Rfq": true
 }
