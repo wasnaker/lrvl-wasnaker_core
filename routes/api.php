@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -12,10 +13,19 @@ Route::prefix('v1')->group(function () {
 
     Route::name('login')->get('/login', [ApiController::class, 'login']);
 
+    // Registrasi publik (self-registration, tanpa auth).
+    Route::post('/register', [RegistrationController::class, 'store']);
+    Route::post('/register/verify', [RegistrationController::class, 'verify']);
+    Route::post('/register/resend', [RegistrationController::class, 'resend']);
+
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', [ApiController::class, 'user']);
         Route::put('/user', [ApiController::class, 'updateProfile']);
         Route::get('/user/company', [ApiController::class, 'company']);
+        Route::put('/user/company', [ApiController::class, 'updateCompany']);
+        Route::post('/user/company/npwp-claim', [ApiController::class, 'claimNpwp']);
+        Route::post('/user/company/npwp-file', [ApiController::class, 'uploadNpwpFile']);
+        Route::get('/user/company/npwp-file', [ApiController::class, 'downloadNpwpFile']);
         Route::get('/user/entity', [ApiController::class, 'entity']);
         Route::post('/user/avatar', [ApiController::class, 'uploadAvatar']);
         Route::delete('/user/avatar', [ApiController::class, 'destroyAvatar']);
