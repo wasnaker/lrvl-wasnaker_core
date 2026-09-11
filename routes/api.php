@@ -19,6 +19,22 @@ Route::prefix('v1')->group(function () {
     Route::post('/register/resend', [RegistrationController::class, 'resend']);
 
     Route::middleware('auth:sanctum')->group(function () {
+        // Get list of supported locales
+        Route::get('/locales', function () {
+            return response()->json(['locales' => config('app.available_locales')]);
+        });
+        // Update authenticated user's locale (self-service, tanpa permission khusus)
+        Route::put('/user/locale', function (\Illuminate\Http\Request $request) {
+            $locale = $request->input('locale');
+            if (! in_array($locale, config('app.available_locales'), true)) {
+                return response()->json(['message' => __('messages.invalid_locale')], 422);
+            }
+            $user = $request->user();
+            $user->locale = $locale;
+            $user->save();
+            return response()->json(['message' => __('messages.saved'), 'locale' => $locale]);
+        });
+
         Route::get('/user', [ApiController::class, 'user']);
         Route::put('/user', [ApiController::class, 'updateProfile']);
         Route::get('/user/company', [ApiController::class, 'company']);

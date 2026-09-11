@@ -43,6 +43,7 @@ class User extends Authenticatable
         'password',
         'is_active',
         'avatar',
+        'locale',
     ];
 
     /**

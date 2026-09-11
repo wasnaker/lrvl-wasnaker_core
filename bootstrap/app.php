@@ -21,6 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'membership.capability' => \Modules\Membership\Http\Middleware\CapabilityMiddleware::class,
         ]);
+
+        // Bahasa per user (users.locale) — jalan sebelum auth:sanctum,
+        // resolve guard sanctum sendiri di SetLocale.
+        $middleware->api(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e, $request) {
