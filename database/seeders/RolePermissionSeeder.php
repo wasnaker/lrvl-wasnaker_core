@@ -9,12 +9,14 @@ use Spatie\Permission\Models\Role;
 class RolePermissionSeeder extends Seeder
 {
     /**
-     * Permission awal: feature users & roles (manajemen akun).
-     * Feature modul bisnis ditambahkan saat modulnya lahir (prefix feature:).
+     * Permission awal: feature platform users, roles & settings (manajemen akun).
+     * Feature modul bisnis ditambahkan saat modulnya lahir (prefix feature:),
+     * di-seed dari seeder modul masing-masing — mis. Region via
+     * Modules\Region\Database\Seeders\RegionPermissionSeeder.
      */
     public function run(): void
     {
-        $features = ['users', 'roles', 'settings', 'region'];
+        $features = ['users', 'roles', 'settings'];
 
         foreach ($features as $feature) {
             foreach (['view', 'create', 'edit', 'delete'] as $capability) {

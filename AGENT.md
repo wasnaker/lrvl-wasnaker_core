@@ -28,6 +28,12 @@
 - AUTO_INCREMENT users di-set 80000 (di CustomerUsersTableSeeder) — user baru via app tidak pernah masuk range statis modul mana pun.
 - Vat (NPWP): range per modul — customer 1–97, surveyor 98–117 (di-seed modul pemakai, bukan modul Vat).
 
+## RBAC & permission
+
+- Permission modul = tanggung jawab modul itu sendiri (jangan tambah ke `RolePermissionSeeder` platform). Konvensi: seeder `Modules\<Modul>\Database\Seeders\<Modul>PermissionSeeder` (idempotent, `Permission::findOrCreate("...", 'sanctum')`) didaftarkan di `module.json` → `migration.seeds` agar ikut `php artisan module:seed <alias>`.
+- `RolePermissionSeeder` platform hanya `users|roles|settings`. Contoh sukses: Region (sebelumnya di seeder platform, sekarang di modul).
+- Setelah seed permission baru, jalankan `php artisan spine:rbac:sync` (idempotent, reset cache permission). Role `admin` bypass semua gate via `Gate::before` di `AppServiceProvider`; `staff` menerima grant per-modul.
+
 ## Pitfall teknis
 
 - `--classnameprefix` = **nama modul saja** (misal `Association`), JANGAN sertakan nama tabel (`AssociationUsers` → menghasilkan `AssociationUsersUsersTableSeeder`).
