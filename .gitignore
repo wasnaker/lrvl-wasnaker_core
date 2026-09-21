@@ -49,5 +49,7 @@ wasnaker-wasnaker-at-gmail-com
 
 # Scribe intermediate build cache
 /.scribe/
+/.opencode/
+/AGENTS.md
 graphify-out/
 modules/

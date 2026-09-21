@@ -6147,12 +6147,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravelspine/laravelspine.git",
-                "reference": "4a1771060094deefce19ca36f2934b268400a8d1"
+                "reference": "e93a3de26d408ef8add084648c31fb90f7bb17bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravelspine/laravelspine/zipball/4a1771060094deefce19ca36f2934b268400a8d1",
-                "reference": "4a1771060094deefce19ca36f2934b268400a8d1",
+                "url": "https://api.github.com/repos/laravelspine/laravelspine/zipball/e93a3de26d408ef8add084648c31fb90f7bb17bf",
+                "reference": "e93a3de26d408ef8add084648c31fb90f7bb17bf",
                 "shasum": ""
             },
             "require": {
@@ -6197,7 +6197,7 @@
                 "source": "https://github.com/laravelspine/laravelspine/tree/main",
                 "issues": "https://github.com/laravelspine/laravelspine/issues"
             },
-            "time": "2026-09-09T15:06:25+00:00"
+            "time": "2026-09-12T12:14:10+00:00"
         },
         {
             "name": "stripe/stripe-php",
